@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aliza Sport Center — Admin</title>
+<style>
+:root{--bg:#07110d;--panel:#0d1b15;--panel2:#11241b;--line:#20372c;--green:#39d98a;--text:#f3f7f5;--muted:#9aada4;--red:#ff6b6b;--yellow:#f5c451}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:#091610;border-right:1px solid var(--line);padding:22px 15px;z-index:5}
+.logo{font-size:22px;font-weight:800}.sub{font-size:12px;color:var(--muted);margin:4px 0 28px}
+.nav button{display:block;width:100%;text-align:left;background:transparent;color:var(--muted);padding:13px 14px;border-radius:10px;margin-bottom:5px}.nav button.active,.nav button:hover{background:rgba(57,217,138,.12);color:var(--green)}
+.main{margin-left:240px;padding:28px;max-width:1450px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+h1{font-size:28px}.welcome,.muted{color:var(--muted)}.welcome{margin-top:6px;font-size:14px}
+.profile{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:12px}.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--green);color:#062013;font-weight:bold}
+.page{display:none}.page.active{display:block}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stat{font-size:27px;font-weight:800;margin:10px 0 5px}.stat-label{color:var(--muted);font-size:13px}
+.section-title{font-size:20px;margin:26px 0 13px}.green{color:var(--green)}.yellow{color:var(--yellow)}.red{color:var(--red)}
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);overflow:hidden}th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted);font-weight:500}
+.badge{display:inline-block;border-radius:20px;padding:5px 9px;font-size:11px}.ok{background:rgba(57,217,138,.12);color:var(--green)}.wait{background:rgba(245,196,81,.12);color:var(--yellow)}.cancel{background:rgba(255,107,107,.12);color:var(--red)}
+.btn{background:var(--green);color:#052013;padding:10px 14px;border-radius:8px;font-weight:700}.btn.secondary{background:#16291f;color:var(--text);border:1px solid var(--line)}.btn.danger{background:var(--red);color:#260606}
+.toolbar{display:flex;justify-content:space-between;gap:10px;margin:18px 0}.toolbar input,.toolbar select,.form input,.form select{background:#091610;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:8px}
+.toolbar input{width:260px}.actions{display:flex;gap:6px}.empty{text-align:center;padding:35px;color:var(--muted)}
+.court-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.court{min-height:160px;display:flex;flex-direction:column;justify-content:space-between}
+.price{font-size:20px;font-weight:bold;color:var(--green);margin-top:9px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.show{display:flex}.modal-box{background:var(--panel);border:1px solid var(--line);border-radius:15px;width:min(500px,100%);padding:22px}.modal-head{display:flex;justify-content:space-between;margin-bottom:18px}.close{background:none;color:var(--muted);font-size:25px}
+label{display:block;color:var(--muted);font-size:13px;margin:12px 0 6px}.form input,.form select{width:100%}
+.toast{position:fixed;right:25px;bottom:25px;background:var(--green);color:#052013;padding:13px 17px;border-radius:9px;font-weight:bold;display:none;z-index:30}
+@media(max-width:900px){.sidebar{width:70px;padding:15px 8px}.logo{font-size:0}.logo:after{content:"AS";font-size:20px;color:var(--green)}.sub{display:none}.nav button{font-size:0;text-align:center;padding:13px 4px}.nav button::first-letter{font-size:19px}.main{margin-left:70px}.grid{grid-template-columns:repeat(2,1fr)}.court-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.sidebar{top:auto;bottom:0;width:100%;height:62px;display:flex;padding:5px;border-top:1px solid var(--line);border-right:0}.nav{display:flex;width:100%;justify-content:space-around}.nav button{width:auto;margin:0}.main{margin-left:0;padding:15px;padding-bottom:80px}.top{align-items:flex-start}.profile span{display:none}.grid,.court-grid{grid-template-columns:1fr}.toolbar{flex-direction:column}.toolbar input{width:100%}table{font-size:11px}th,td{padding:9px 6px}.actions .btn{padding:7px;font-size:11px}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+ <div class="logo">Aliza Sport Center</div><div class="sub">Panel Administrator</div>
+ <div class="nav">
+  <button class="active" onclick="showPage('dashboard',this)">📊 Dashboard</button>
+  <button onclick="showPage('booking',this)">📅 Booking</button>
+  <button onclick="showPage('jadwal',this)">🕐 Jadwal</button>
+  <button onclick="showPage('lapangan',this)">⚽ Lapangan</button>
+  <button onclick="showPage('pelanggan',this)">👥 Pelanggan</button>
+  <button onclick="showPage('keuangan',this)">💰 Keuangan</button>
+  <button onclick="showPage('pesan',this)">💬 Pesan Masuk</button>
+ </div>
+</aside>
+
+<main class="main">
+ <div class="top"><div><h1 id="title">Dashboard</h1><div class="welcome">Selamat datang, Admin 👋</div></div><div class="profile"><div class="avatar">A</div><span>Administrator</span></div></div>
+
+ <section id="dashboard" class="page active">
+  <div class="grid">
+   <div class="card"><div class="stat" id="statBooking">0</div><div class="stat-label">Total Booking</div></div>
+   <div class="card"><div class="stat green" id="statConfirm">0</div><div class="stat-label">Booking Aktif</div></div>
+   <div class="card"><div class="stat yellow" id="statWait">0</div><div class="stat-label">Menunggu Konfirmasi</div></div>
+   <div class="card"><div class="stat green" id="statIncome">Rp0</div><div class="stat-label">Pendapatan Booking</div></div>
+  </div>
+  <h2 class="section-title">Booking Terbaru</h2>
+  <div class="card" id="recent"></div>
+ </section>
+
+ <section id="booking" class="page">
+  <div class="toolbar"><input id="search" placeholder="Cari nama / lapangan..." oninput="renderBooking()"><button class="btn" onclick="openAdd()">+ Tambah Booking</button></div>
+  <div class="card" id="bookingTable"></div>
+ </section>
+
+ <section id="jadwal" class="page">
+  <h2 class="section-title">Jadwal Lapangan</h2>
+  <div class="card"><div class="toolbar"><input type="date" id="scheduleDate" onchange="renderSchedule()"><select id="scheduleCourt" onchange="renderSchedule()"><option>Semua Lapangan</option><option>Lapangan A</option><option>Lapangan B</option><option>Lapangan C</option></select></div><div id="scheduleBox"></div></div>
+ </section>
+
+ <section id="lapangan" class="page">
+  <h2 class="section-title">Data Lapangan</h2>
+  <div class="court-grid">
+   <div class="card court"><div><h3>⚽ Lapangan A</h3><p class="muted">Vinyl • Indoor • Standar</p><div class="price">Rp100.000 / jam</div></div><span class="badge ok">Aktif</span></div>
+   <div class="card court"><div><h3>⚽ Lapangan B</h3><p class="muted">Rumput sintetis • Indoor</p><div class="price">Rp120.000 / jam</div></div><span class="badge ok">Aktif</span></div>
+   <div class="card court"><div><h3>⚽ Lapangan C</h3><p class="muted">Vinyl Premium • Indoor</p><div class="price">Rp150.000 / jam</div></div><span class="badge ok">Aktif</span></div>
+  </div>
+ </section>
+
+ <section id="pelanggan" class="page">
+  <h2 class="section-title">Data Pelanggan</h2><div class="card" id="customerBox"></div>
+ </section>
+
+ <section id="pesan" class="page">
+  <h2 class="section-title">Pesan Masuk</h2>
+  <div class="card" id="messageBox"><div class="empty">Belum ada pesan dari pengguna.</div></div>
+ </section>
+
+ <section id="keuangan" class="page">
+  <h2 class="section-title">Keuangan</h2><div class="grid"><div class="card"><div class="stat green" id="incomeAll">Rp0</div><div class="stat-label">Total Pendapatan</div></div><div class="card"><div class="stat" id="countPaid">0</div><div class="stat-label">Booking Tercatat</div></div></div>
+ </section>
+</main>
+
+<div class="modal" id="modal">
+ <div class="modal-box"><div class="modal-head"><h2 id="modalTitle">Tambah Booking</h2><button class="close" onclick="closeModal()">×</button></div>
+ <div class="form">
+  <label>Nama Pelanggan</label><input id="name" placeholder="Contoh: Ibnu">
+  <label>No. WhatsApp</label><input id="phone" placeholder="08xxxxxxxxxx">
+  <label>Lapangan</label><select id="court"><option>Lapangan A</option><option>Lapangan B</option><option>Lapangan C</option></select>
+  <label>Tanggal</label><input type="date" id="date">
+  <label>Jam</label><select id="time"><option>08:00</option><option>10:00</option><option>12:00</option><option>14:00</option><option>16:00</option><option>18:00</option><option>20:00</option></select>
+  <label>Durasi</label><select id="duration" onchange="calcPrice()"><option value="1">1 Jam</option><option value="2">2 Jam</option><option value="3">3 Jam</option></select>
+  <label>Total</label><input id="price" readonly value="Rp100.000">
+  <button class="btn" style="width:100%;margin-top:17px" onclick="saveBooking()">Simpan Booking</button>
+ </div></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const prices={"Lapangan A":100000,"Lapangan B":120000,"Lapangan C":150000};
+let bookings=JSON.parse(localStorage.getItem("alizaBookings")||"[]");
+
+function showPage(id,btn){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
+ const titles={dashboard:"Dashboard",booking:"Booking",jadwal:"Jadwal Lapangan",lapangan:"Data Lapangan",pelanggan:"Pelanggan",keuangan:"Keuangan"};
+ document.getElementById("title").textContent=titles[id];
+ if(id==="dashboard")renderDashboard();if(id==="booking")renderBooking();if(id==="jadwal")renderSchedule();if(id==="pelanggan")renderCustomers();if(id==="keuangan")renderFinance();if(id==="pesan")renderMessages();
+}
+function save(){localStorage.setItem("alizaBookings",JSON.stringify(bookings))}
+function openAdd(){
+ document.getElementById("name").value="";document.getElementById("phone").value="";
+ document.getElementById("court").value="Lapangan A";document.getElementById("date").value=new Date().toISOString().split("T")[0];
+ document.getElementById("modal").classList.add("show");calcPrice()
+}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+function calcPrice(){const c=document.getElementById("court").value,d=+document.getElementById("duration").value;document.getElementById("price").value="Rp"+(prices[c]*d).toLocaleString("id-ID")}
+document.getElementById("court").addEventListener("change",calcPrice);
+function saveBooking(){
+ const name=document.getElementById("name").value.trim(),phone=document.getElementById("phone").value.trim(),court=document.getElementById("court").value,date=document.getElementById("date").value,time=document.getElementById("time").value,duration=+document.getElementById("duration").value;
+ if(!name||!date){toast("Nama dan tanggal wajib diisi");return}
+ bookings.push({id:Date.now(),name,phone,court,date,time,duration,total:prices[court]*duration,status:"Menunggu"});save();closeModal();refresh();toast("Booking berhasil ditambahkan")
+}
+function renderDashboard(){
+ document.getElementById("statBooking").textContent=bookings.length;document.getElementById("statConfirm").textContent=bookings.filter(x=>x.status==="Dikonfirmasi").length;
+ document.getElementById("statWait").textContent=bookings.filter(x=>x.status==="Menunggu").length;document.getElementById("statIncome").textContent="Rp"+bookings.reduce((a,b)=>a+b.total,0).toLocaleString("id-ID");
+ const recent=bookings.slice(-5).reverse();document.getElementById("recent").innerHTML=recent.length?tableHTML(recent,true):'<div class="empty">Belum ada booking. Booking dari halaman pengguna akan muncul di sini jika menggunakan browser/storage yang sama.</div>';
+}
+function renderBooking(){
+ const q=(document.getElementById("search")?.value||"").toLowerCase(),arr=bookings.filter(b=>(b.name+" "+b.court).toLowerCase().includes(q));
+ document.getElementById("bookingTable").innerHTML=arr.length?tableHTML(arr,false):'<div class="empty">Belum ada data booking.</div>'
+}
+function tableHTML(arr,small){
+ return `<table><thead><tr><th>Pelanggan</th><th>Lapangan</th><th>Tanggal</th><th>Jam</th><th>Total</th><th>Status</th>${small?"":"<th>Aksi</th>"}</tr></thead><tbody>`+
+ arr.map(b=>`<tr><td>${b.name}</td><td>${b.court}</td><td>${formatDate(b.date)}</td><td>${b.time} (${b.duration}j)</td><td>Rp${b.total.toLocaleString("id-ID")}</td><td><span class="badge ${b.status==="Dikonfirmasi"?"ok":b.status==="Dibatalkan"?"cancel":"wait"}">${b.status}</span></td>${small?"":`<td class="actions">${b.status==="Menunggu"?`<button class="btn" onclick="confirmBooking(${b.id})">Konfirmasi</button>`:""}<button class="btn danger" onclick="deleteBooking(${b.id})">Hapus</button></td>`}</tr>`).join("")+"</tbody></table>"
+}
+function confirmBooking(id){const b=bookings.find(x=>x.id===id);if(b)b.status="Dikonfirmasi";save();refresh();toast("Booking dikonfirmasi ✓")}
+function deleteBooking(id){if(confirm("Hapus booking ini?")){bookings=bookings.filter(x=>x.id!==id);save();refresh();toast("Booking dihapus")}}
+function renderSchedule(){
+ const date=document.getElementById("scheduleDate").value||new Date().toISOString().split("T")[0],court=document.getElementById("scheduleCourt").value;
+ const rows=bookings.filter(b=>b.date===date&&(court==="Semua Lapangan"||b.court===court));
+ document.getElementById("scheduleBox").innerHTML=rows.length?tableHTML(rows,true):'<div class="empty">Tidak ada booking pada tanggal tersebut.</div>'
+}
+function renderCustomers(){
+ const map={};bookings.forEach(b=>{map[b.phone||b.name]=b});const arr=Object.values(map);
+ document.getElementById("customerBox").innerHTML=arr.length?`<table><thead><tr><th>Nama</th><th>WhatsApp</th><th>Booking</th><th>Total Transaksi</th></tr></thead><tbody>`+arr.map(c=>{const bs=bookings.filter(b=>(b.phone||b.name)===(c.phone||c.name));return `<tr><td>${c.name}</td><td>${c.phone||"-"}</td><td>${bs.length}</td><td>Rp${bs.reduce((a,b)=>a+b.total,0).toLocaleString("id-ID")}</td></tr>`}).join("")+"</tbody></table>":'<div class="empty">Belum ada pelanggan.</div>'
+}
+function renderFinance(){document.getElementById("incomeAll").textContent="Rp"+bookings.reduce((a,b)=>a+b.total,0).toLocaleString("id-ID");document.getElementById("countPaid").textContent=bookings.length}
+function formatDate(s){return new Date(s+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"})}
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2200)}
+function getMessages(){return JSON.parse(localStorage.getItem("alizaMessages")||"[]")}
+function saveMessages(m){localStorage.setItem("alizaMessages",JSON.stringify(m))}
+function renderMessages(){
+ const box=document.getElementById("messageBox"),msgs=getMessages().slice().reverse();
+ if(!msgs.length){box.innerHTML='<div class="empty">Belum ada pesan dari pengguna.</div>';return}
+ box.innerHTML=msgs.map(m=>`<div style="padding:16px 0;border-bottom:1px solid var(--line)"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>${m.subject}</b><div class="muted" style="font-size:12px;margin-top:4px">${m.from} • ${m.time}</div></div><span class="badge ${m.status==="Dibalas"?"ok":"wait"}">${m.status}</span></div><p style="margin-top:12px;line-height:1.6">${m.text}</p>${m.reply?`<div style="margin-top:10px;padding:11px;background:var(--panel2);border-radius:9px"><span class="muted">Balasan admin:</span><br>${m.reply}</div>`:""}<div style="display:flex;gap:8px;margin-top:12px">${m.status!=="Dibalas"?`<button class="btn" onclick="replyMessage(${m.id})">Balas</button>`:""}<button class="btn danger" onclick="deleteMessage(${m.id})">Hapus</button></div></div>`).join("");
+}
+function replyMessage(id){
+ const msgs=getMessages(),m=msgs.find(x=>x.id===id);if(!m)return;const reply=prompt("Tulis balasan untuk pengguna:",m.reply||"");if(reply===null)return;if(!reply.trim())return; m.reply=reply.trim();m.status="Dibalas";saveMessages(msgs);renderMessages();toast("Balasan berhasil dikirim ✓");
+}
+function deleteMessage(id){if(!confirm("Hapus pesan ini?"))return;saveMessages(getMessages().filter(m=>m.id!==id));renderMessages();toast("Pesan dihapus")}
+function refresh(){renderDashboard();renderBooking();renderSchedule();renderCustomers();renderFinance()}
+document.getElementById("scheduleDate").value=new Date().toISOString().split("T")[0];refresh();renderMessages();
+</script>
+</body>
+</html>
